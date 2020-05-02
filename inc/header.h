@@ -32,6 +32,7 @@ typedef struct s_point {
   int x;
   int y;
   int is_wall;
+  int is_coin;
 } t_point;
 
 typedef struct s_list {
