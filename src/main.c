@@ -1,13 +1,13 @@
 
 #include <stdio.h>
 #include "../inc/header.h"
-void place_wall(int x, int y, SDL_Surface *scr, SDL_Surface *flower) {
-  SDL_Rect bg_flower;
-  bg_flower.w = WALL_WIDTH;
-  bg_flower.h = WALL_WIDTH;
-  bg_flower.x = x * WALL_WIDTH;
-  bg_flower.y = y * WALL_WIDTH;
-  SDL_BlitScaled(flower, NULL, scr, &bg_flower);
+void place_image(int x, int y, SDL_Surface *scr, SDL_Surface *image) {
+  SDL_Rect bg_image;
+  bg_image.w = WALL_WIDTH;
+  bg_image.h = WALL_WIDTH;
+  bg_image.x = x * WALL_WIDTH;
+  bg_image.y = y * WALL_WIDTH;
+  SDL_BlitScaled(image, NULL, scr, &bg_image);
 }
 
 
@@ -35,7 +35,17 @@ int main(int argc, char **argv){
     t_point *point = (t_point *)malloc(sizeof(t_point));
     point->y = game->size_y;
     point->x = game->size_x;
-    point->is_wall = *buf - 48;
+    if(*buf - 48 == 1) {
+      point->is_wall = 1;
+      point->is_coin = 0;
+    }
+    else if(*buf - 48 == 2){
+      point->is_wall = 0;
+      point->is_coin = 1;
+    } else {
+      point->is_wall = 0;
+      point->is_coin = 0;
+    }
     if (!map){
       map = mx_create_node(point);
       tmp = map;
@@ -45,7 +55,6 @@ int main(int argc, char **argv){
     }
     game->size_x++;
   }
-  // check y
   if(game->size_y * WALL_WIDTH > SCREEN_HEIGHT) {
     mx_printerr("To much\n");
     exit(-1);
@@ -56,16 +65,22 @@ int main(int argc, char **argv){
   SDL_Init( SDL_INIT_EVERYTHING );
   SDL_Window *window = SDL_CreateWindow( "Hello SDL World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI );
   SDL_Surface *scr = NULL;
-  SDL_Surface *flower = NULL;
+  SDL_Surface *wall = NULL;
+  SDL_Surface *coin = NULL;
   scr = SDL_GetWindowSurface(window);
-  flower = IMG_Load("3.bmp");
-  flower = SDL_ConvertSurface(flower, scr->format, NULL);
+  wall = IMG_Load("3.bmp");
+  coin = IMG_Load("8.bmp");
+  wall = SDL_ConvertSurface(wall, scr->format, 0);
+  coin = SDL_ConvertSurface(coin, scr->format, 0);
   SDL_Event windowEvent;
   t_point *t;
   while (tmp) {
     t = (t_point*)tmp->data;
     if (t->is_wall) {
-      place_wall(t->x, t->y, scr, flower);
+      place_image(t->x, t->y, scr, wall);
+    }
+    else if(t->is_coin) {
+      place_image(t->x, t->y, scr, coin);
     }
     tmp = tmp->next;
   }
