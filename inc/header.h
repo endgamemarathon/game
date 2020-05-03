@@ -44,4 +44,5 @@ void mx_printerr(const char *s);
 t_list *mx_create_node(void *data);
 void mx_push_back(t_list **list, void *data);
 int mx_strlen(const char *s);
+void print_map(t_game *game, t_list *map);
 #endif
